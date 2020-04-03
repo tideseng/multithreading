@@ -3,7 +3,7 @@ package com.tideseng.multithreading.safe;
 /**
  * 多线程安全问题
  * 原因：
- *      多个线程修改同一个资源（全局变量或静态冰凉）
+ *      多个线程修改同一个资源（全局变量或静态变量）
  */
 public class ThreadSafe {
 
