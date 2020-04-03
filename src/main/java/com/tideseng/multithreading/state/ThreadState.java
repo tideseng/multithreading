@@ -49,9 +49,9 @@ public class ThreadState {
     /**
      * 查看线程的BLOCKED状态
      *  1.手动Debug让两个线程先后进入同步代码块;
-     *  2.在idea控制台输入:jps;
+     *  2.在idea控制台输入:jps(显示当前所有java进程pid);
      *  3.找出当前类的pid;
-     *  4.在idea控制台输入:jstack pid;
+     *  4.在idea控制台输入:jstack pid(jstack是java虚拟机自带的一种堆栈跟踪工具，用于打印出给定的java进程ID或core file或远程调试服务的Java堆栈信息);
      *  5.查看指定线程名的状态（结果一个为RUNNABLE、另一个为BLOCKED(on object monitor|waiting for monitor entry)）
      */
     private static void blocked1(){
@@ -70,17 +70,17 @@ public class ThreadState {
 
     /**
      * 查看线程的BLOCKED、WAITING状态
-     *      佳欢0/1先后进入同步方法，此时佳欢0处于RUNNABLE状态、佳欢1处于BLOCKED状态(on object monitor|waiting for monitor entry) -- 这里涉及到EntrySet
+     *      佳欢0/1先后进入同步方法，此时佳欢0处于RUNNABLE状态、佳欢1处于BLOCKED状态(on object monitor|waiting for monitor entry) -- 会放入EntryList(先进后出)
      *      佳欢0执行wait()方法，此时佳欢0处于WAITING状态(on object monitor|in Object.wait())、佳欢1处于Runnable状态
-     *      佳欢1执行wait()方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait()) -- 这里设计到Wait Set，先进后出所以佳欢1先唤醒
+     *      佳欢1执行wait()方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait()) -- 会放入WaitSet(先进先出)
      *      佳欢2进入同步方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait())、佳欢2处于RUNNABLE状态
-     *      佳欢2执行notifyAll()方法，此时佳欢0/1处于BLOCKED状态(on object monitor|in Object.wait())、佳欢2处于RUNNABLE状态
+     *      佳欢2执行notifyAll()方法，此时佳欢0/1处于BLOCKED状态(on object monitor|in Object.wait())、佳欢2处于RUNNABLE状态 -- 佳欢0先唤醒并放入EntryList、佳欢1后唤醒并放入EntryList
      *      佳欢2释放锁对象之后，此时佳欢0处于BLOCKED状态(on object monitor|in Object.wait())、佳欢1/2处于RUNNABLE状态
      *      佳欢1释放锁对象之后，此时佳欢0/1/2处于RUNNABLE状态
      * 注意：
      *      当佳欢0/1先后进入同步方法后、佳欢0执行wait()方法前，佳欢2不能进入同步方法，否则会出现佳欢1一直处于waiting状态
-     *      如果佳欢0/1/2先后进入同步方法，由于先进后出导致佳欢0执行wait()方法释放锁后，佳欢2拿到锁执行notifyAll()方法，而当佳欢1的wait()执行后没有线程会唤醒它
-     *          【可以在wait()方法中设置自动唤醒时间避免这一问题】
+     *          当佳欢0/1/2先后进入同步方法，由于EntryList先进后出导致佳欢0执行wait()方法释放锁后，佳欢2拿到锁执行notifyAll()方法唤醒佳欢0放入EntryList，佳欢1先获取锁调用wait()后没有线程会唤醒它
+     *              【可以在wait()方法中设置自动唤醒时间避免这一问题】
      */
     private static void blocked2() throws InterruptedException {
         ThreadState object = new ThreadState();
@@ -107,7 +107,7 @@ public class ThreadState {
     private void notifyBlocked(){
         synchronized (object) {
             System.out.println(Thread.currentThread().getName() + "唤醒所有线程");
-            object.notify(); // 只有锁对象才能调用wait()/notify()/notifyAll()方法（notify()会唤醒佳欢0并让佳欢0获取对象锁、notifyAll()会唤醒佳欢0/1并让佳欢1获取对象锁）
+            object.notifyAll(); // 只有锁对象才能调用wait()/notify()/notifyAll()方法（notify()会从WaitSet中唤醒佳欢0放入EntryList并让佳欢0获取对象锁、notifyAll()会从WaitSet中唤醒佳欢0/1放入EntryList并让佳欢1获取对象锁）
             System.out.println(Thread.currentThread().getName() + "唤醒所有线程");
         }
     }
