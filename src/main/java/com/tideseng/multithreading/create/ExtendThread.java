@@ -3,6 +3,45 @@ package com.tideseng.multithreading.create;
 /**
  * 继承Thred类创建线程
  * Thread类本质上是Runnable接口的实现类，是线程的对象
+ *
+ * JVM、HotSpot、OpenJDK
+ *      JVM是Java虚拟机规范
+ *      HostSpot是JVM概念的实现
+ *      OpenJDK是在JDK基础上开发了HotSpot的开源项目
+ *
+ * 线程启动原理
+ *      调用start()方法后会启动一个线程（调用start()方法的语义是当前线程告诉JVM启动调用start()方法的线程）
+ *      start()是被synchronized修饰的方法，实际调用了被native修饰的start0()方法来针对不同的操作系统来创建线程并启动线程
+ *      通过下方地址查看线程中的本地方法对应的JVM方法
+ *          http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/00cd9dc3c2b5/src/share/native/java/lang/Thread.c
+ *              {"start0",           "()V",        (void *)&JVM_StartThread},
+ *              {"interrupt0",       "()V",        (void *)&JVM_Interrupt},
+ *      通过hotspot/openjdk源码查找JVM_StartThread方法
+ *          在hotspot\hotspot-87ee5ee27509\src\share\vm\prims\jvm.cpp文件中搜索JVM_StartThread方法
+ *              JVM_ENTRY(void, JVM_StartThread(JNIEnv* env, jobject jthread))
+ *                  ...
+ *                  native_thread = new JavaThread(&thread_entry, sz); // 调用JavaThread创建线程
+ *                  ...
+ *                  Thread::start(native_thread); // 调用start方法启动线程
+ *                  ...
+ *              JVM_END
+ *          JVM_StartThread调用了hotspot\hotspot-87ee5ee27509\src\share\vm\runtime\thread.cpp文件中的JavaThread和start
+ *              JavaThread::JavaThread(ThreadFunction entry_point, size_t stack_sz)
+ *                  ...
+ *                  os::create_thread(this, thr_type, stack_sz); // 调用os平台创建线程
+ *                  ...
+ *
+ *              void Thread::start(Thread* thread) {
+ *                  trace("start", thread);
+ *                  if (!DisableStartThread) {
+ *                      if (thread->is_Java_thread()) {
+ *                          // 设置线程状态为Runnable
+ *                          java_lang_Thread::set_thread_status(((JavaThread*)thread)->threadObj(), java_lang_Thread::RUNNABLE);
+ *                      }
+ *                      os::start_thread(thread); // 调用os平台启动线程（启动后最终会调用JavaThread::run()方法来回调线程的run方法）
+ *                  }
+ *              }
+ *      当run()方法执行完毕后，线程终止
  */
 public class ExtendThread extends Thread {
 
