@@ -9,7 +9,7 @@ public class ThreadSafe2 {
 
     private static int count;
 
-    public synchronized static void add() {
+    public static void add() {
         try {
             Thread.sleep(1);
         } catch (InterruptedException e) {
