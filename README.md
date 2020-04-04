@@ -12,6 +12,7 @@
 - [多线程应用](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/application)
 - [线程终止](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/interrupt)
 - [线程复位](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/reset)
+- [线程可见性](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/lock)
 
 ## 基本介绍
 
