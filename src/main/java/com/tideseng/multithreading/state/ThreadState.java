@@ -70,16 +70,16 @@ public class ThreadState {
 
     /**
      * 查看线程的BLOCKED、WAITING状态
-     *      佳欢0/1先后进入同步方法，此时佳欢0处于RUNNABLE状态、佳欢1处于BLOCKED状态(on object monitor|waiting for monitor entry) -- 会放入EntryList(先进后出)
+     *      佳欢0/1先后进入同步方法，此时佳欢0处于RUNNABLE状态、佳欢1处于BLOCKED状态(on object monitor|waiting for monitor entry) -- 会放入EntryList
      *      佳欢0执行wait()方法，此时佳欢0处于WAITING状态(on object monitor|in Object.wait())、佳欢1处于Runnable状态
-     *      佳欢1执行wait()方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait()) -- 会放入WaitSet(先进先出)
+     *      佳欢1执行wait()方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait()) -- 会放入WaitSet
      *      佳欢2进入同步方法，此时佳欢0/1处于WAITING状态(on object monitor|in Object.wait())、佳欢2处于RUNNABLE状态
      *      佳欢2执行notifyAll()方法，此时佳欢0/1处于BLOCKED状态(on object monitor|in Object.wait())、佳欢2处于RUNNABLE状态 -- 佳欢0先唤醒并放入EntryList、佳欢1后唤醒并放入EntryList
      *      佳欢2释放锁对象之后，此时佳欢0处于BLOCKED状态(on object monitor|in Object.wait())、佳欢1/2处于RUNNABLE状态
      *      佳欢1释放锁对象之后，此时佳欢0/1/2处于RUNNABLE状态
      * 注意：
      *      当佳欢0/1先后进入同步方法后、佳欢0执行wait()方法前，佳欢2不能进入同步方法，否则会出现佳欢1一直处于waiting状态
-     *          当佳欢0/1/2先后进入同步方法，由于EntryList先进后出导致佳欢0执行wait()方法释放锁后，佳欢2拿到锁执行notifyAll()方法唤醒佳欢0放入EntryList，佳欢1先获取锁调用wait()后没有线程会唤醒它
+     *          当佳欢0/1/2先后进入同步方法，佳欢0执行wait()方法释放锁后，佳欢2拿到锁执行notifyAll()方法唤醒佳欢0放入EntryList，佳欢1先获取锁调用wait()后没有线程会唤醒它
      *              【可以在wait()方法中设置自动唤醒时间避免这一问题】
      */
     private static void blocked2() throws InterruptedException {
