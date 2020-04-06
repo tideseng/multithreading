@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 重入锁
  */
-public class ThreadReentrant {
+public class ReentrantDemo {
 
     /**
      * synchronized关键字实现重入
@@ -38,7 +38,7 @@ public class ThreadReentrant {
     }
 
     public static void main(String[] args) {
-        ThreadReentrant threadReentrant = new ThreadReentrant();
+        ReentrantDemo threadReentrant = new ReentrantDemo();
         for (int i = 0; i < 5; i++) {
             new Thread(() -> threadReentrant.syncReentrant1()).start();
             new Thread(() -> threadReentrant.lockReentrant1()).start();

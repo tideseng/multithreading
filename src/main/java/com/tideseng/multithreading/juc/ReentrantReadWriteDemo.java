@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * 重入读写锁，适用读多写少的场景
  */
-public class ThreadReentrantReadWrite {
+public class ReentrantReadWriteDemo {
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     public Lock read = lock.readLock();
@@ -47,7 +47,7 @@ public class ThreadReentrantReadWrite {
     }
 
     public static void main(String[] args) {
-        ThreadReentrantReadWrite readWrite = new ThreadReentrantReadWrite();
+        ReentrantReadWriteDemo readWrite = new ReentrantReadWriteDemo();
         for (int i = 0; i < 5; i++) {
             new Thread(() -> {
                 if(Thread.currentThread().getName().contains("2"))
