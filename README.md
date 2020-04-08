@@ -14,6 +14,7 @@
 - [线程复位](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/reset)
 - [线程可见性](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/jmm)
 - [JUC工具包](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/juc)
+- [本地线程](https://github.com/tideseng/multithreading/tree/master/src/main/java/com/tideseng/multithreading/local)
 
 ## 基本介绍
 
